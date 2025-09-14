@@ -1,10 +1,16 @@
 import telebot
+import random
+import os
 from telebot import types 
 from logic import gen_pass
     
     # Замени 'TOKEN' на токен твоего бота
     # Этот токен ты получаешь от BotFather, чтобы бот мог работать
 bot = telebot.TeleBot("")
+memes_list = ('memes/meme1', 'memes/meme2', 'memes/meme3')
+
+print(os.listdir('memes'))
+print(os.listdir('music_folder'))
     
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -90,5 +96,17 @@ def handle_successful_payment(message):
     product = message.successful_payment.invoice_payload
     bot.reply_to(message, 
                  f"Payment for {product} successful!")
+    
+@bot.message_handler(commands=['mem'])
+def send_mem(message):
+    img_name = random.choice(os.listdir('memes'))
+    with open(f'memes/{img_name}', 'rb') as f:  
+        bot.send_photo(message.chat.id, f)
+
+@bot.message_handler(commands = ['random_music'])
+def send_music(message):
+    music = random.choice(os.listdir('music_folder'))
+    with open(f'music_folder/{music}', 'rb') as f:
+        bot.send_audio(message.chat.id, f)
     
 bot.polling()
